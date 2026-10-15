@@ -1,0 +1,287 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f8f9fc" />
+  <meta name="description" content="Find trusted local workers for everyday jobs with MyHelper." />
+  <title>MyHelper — The right help, right nearby.</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="navbar">
+    <a class="brand" href="#" aria-label="MyHelper home">
+      <span class="brand-icon">M</span>
+      <span>myhelper<span class="brand-dot">.</span></span>
+    </a>
+
+    <nav class="nav-links" id="navLinks">
+      <a href="#services">Services</a>
+      <a href="#how-it-works">How it works</a>
+      <a href="#why-us">Why MyHelper</a>
+    </nav>
+
+    <div class="nav-actions">
+      <button class="btn btn-ghost" id="loginBtn">Log in</button>
+      <button class="btn btn-primary" id="registerBtn">Get started <span>↗</span></button>
+    </div>
+
+    <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-content">
+        <div class="eyebrow"><span class="live-dot"></span> GOOD PEOPLE. GREAT WORK.</div>
+
+        <h1>Life gets busy.<br />We've got the <span class="gradient-text">help.</span></h1>
+
+        <p class="hero-description">
+          From fixing a leaky tap to getting your home sparkling clean,
+          find local people who get the job done right.
+        </p>
+
+        <form class="search-panel" id="searchForm">
+          <label class="search-field">
+            <span class="field-icon">⌕</span>
+            <span class="field-content">
+              <span class="field-label">WHAT DO YOU NEED?</span>
+              <input id="serviceInput" type="text" placeholder="e.g. Electrician, cleaner..." />
+            </span>
+          </label>
+
+          <span class="search-divider"></span>
+
+          <label class="search-field location-field">
+            <span class="field-icon">⌖</span>
+            <span class="field-content">
+              <span class="field-label">YOUR LOCATION</span>
+              <input id="locationInput" type="text" placeholder="Enter your city" />
+            </span>
+          </label>
+
+          <button class="search-button" type="submit" aria-label="Search workers">Search <span>→</span></button>
+        </form>
+
+        <div class="popular-searches">
+          <span>Popular:</span>
+          <button class="search-chip" data-service="Electrician">Electrician</button>
+          <button class="search-chip" data-service="Plumber">Plumber</button>
+          <button class="search-chip" data-service="Cleaning">Cleaning</button>
+        </div>
+
+        <div class="trust-row">
+          <div class="avatar-stack" aria-hidden="true">
+            <span>R</span><span>A</span><span>S</span><span>+</span>
+          </div>
+          <div>
+            <strong>Local help, made simple</strong>
+            <p>Find the right person for the job.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="visual-glow"></div>
+        <div class="hero-image-frame">
+          <img
+            src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=1000&q=85"
+            alt="Professional electrician working on a home repair"
+          />
+          <div class="image-overlay"></div>
+          <div class="image-caption">
+            <span class="caption-icon">✦</span>
+            <div>
+              <strong>Help is closer than you think.</strong>
+              <p>Your next task starts here.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="floating-card rating-card">
+          <div class="rating-symbol">✦</div>
+          <div><strong>Made for real life</strong><p>Everyday help, simplified</p></div>
+        </div>
+
+        <div class="floating-card service-card">
+          <span class="service-card-icon">⌁</span>
+          <div><strong>Find your helper</strong><p>Search by skill & location</p></div>
+          <span class="mini-arrow">↗</span>
+        </div>
+        <div class="decor decor-one"></div>
+        <div class="decor decor-two"></div>
+      </div>
+    </section>
+
+    <section class="services section-wrap" id="services">
+      <div class="section-heading">
+        <div>
+          <span class="section-kicker">HERE WHEN YOU NEED US</span>
+          <h2>What can we help <span class="gradient-text">with?</span></h2>
+          <p>Little jobs, big jobs — find the right skills for your day.</p>
+        </div>
+        <a href="#searchForm" class="text-link">Find a helper <span>↗</span></a>
+      </div>
+
+      <div class="service-grid">
+        <button class="category-card" data-service="Electrician">
+          <span class="category-icon icon-lavender">ϟ</span>
+          <span class="category-name">Electrician</span>
+          <span class="category-description">Wiring & repairs</span>
+          <span class="category-arrow">↗</span>
+        </button>
+        <button class="category-card" data-service="Plumber">
+          <span class="category-icon icon-blue">≈</span>
+          <span class="category-name">Plumbing</span>
+          <span class="category-description">Leaks & fittings</span>
+          <span class="category-arrow">↗</span>
+        </button>
+        <button class="category-card" data-service="Cleaning">
+          <span class="category-icon icon-peach">✧</span>
+          <span class="category-name">Cleaning</span>
+          <span class="category-description">Freshen up your space</span>
+          <span class="category-arrow">↗</span>
+        </button>
+        <button class="category-card" data-service="Carpenter">
+          <span class="category-icon icon-mint">⌘</span>
+          <span class="category-name">Carpentry</span>
+          <span class="category-description">Furniture & woodwork</span>
+          <span class="category-arrow">↗</span>
+        </button>
+        <button class="category-card" data-service="Painting">
+          <span class="category-icon icon-yellow">◒</span>
+          <span class="category-name">Painting</span>
+          <span class="category-description">Give walls new life</span>
+          <span class="category-arrow">↗</span>
+        </button>
+        <button class="category-card" data-service="Gardening">
+          <span class="category-icon icon-green">❋</span>
+          <span class="category-name">Gardening</span>
+          <span class="category-description">Care for your greens</span>
+          <span class="category-arrow">↗</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="how-section section-wrap" id="how-it-works">
+      <div class="section-heading centered-heading">
+        <div>
+          <span class="section-kicker">NO FUSS, JUST HELP</span>
+          <h2>Three steps. <span class="gradient-text">Done.</span></h2>
+          <p>Getting things sorted has never felt this simple.</p>
+        </div>
+      </div>
+
+      <div class="steps-grid">
+        <article class="step-card">
+          <span class="step-number">01</span>
+          <div class="step-icon">⌕</div>
+          <h3>Tell us what you need</h3>
+          <p>Choose a service and enter your location to find relevant helpers.</p>
+        </article>
+        <article class="step-card featured-step">
+          <span class="step-number">02</span>
+          <div class="step-icon">♧</div>
+          <h3>Find your person</h3>
+          <p>Explore available workers, their skills, schedules and charges.</p>
+        </article>
+        <article class="step-card">
+          <span class="step-number">03</span>
+          <div class="step-icon">✓</div>
+          <h3>Send a request</h3>
+          <p>Request a suitable time and follow the status of your booking.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="why-section section-wrap" id="why-us">
+      <div class="why-visual">
+        <div class="why-art">
+          <div class="art-circle art-circle-one"></div>
+          <div class="art-circle art-circle-two"></div>
+          <div class="art-check">✓</div>
+          <div class="art-label"><span>✦</span> More time for what matters.</div>
+        </div>
+      </div>
+      <div class="why-content">
+        <span class="section-kicker">A BETTER WAY TO GET THINGS DONE</span>
+        <h2>Your time is precious. <span class="gradient-text">Spend it well.</span></h2>
+        <p>MyHelper brings people who need a hand together with people ready to work — simply, clearly, and in one place.</p>
+        <div class="benefit-list">
+          <div><span class="benefit-check">✓</span><div><strong>Find relevant local skills</strong><p>Search using the service and city you need.</p></div></div>
+          <div><span class="benefit-check">✓</span><div><strong>See availability upfront</strong><p>Choose a time slot that suits your plans.</p></div></div>
+          <div><span class="benefit-check">✓</span><div><strong>Manage requests in one place</strong><p>Track responses without endless follow-ups.</p></div></div>
+        </div>
+        <button class="btn btn-primary why-cta" id="whyStartBtn">Let's get started <span>↗</span></button>
+      </div>
+    </section>
+
+    <section class="cta-section">
+      <div class="cta-orb"></div>
+      <span class="section-kicker">YOUR NEXT TASK, SORTED</span>
+      <h2>Ready to make life<br />a little <span>easier?</span></h2>
+      <p>Find a helper, or join MyHelper and share your skills.</p>
+      <div class="cta-actions">
+        <button class="btn btn-light" id="ctaFindBtn">Find a helper <span>→</span></button>
+        <button class="btn btn-outline-light" id="ctaJoinBtn">Join as a worker</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <a class="brand footer-brand" href="#">
+      <span class="brand-icon">M</span>
+      <span>myhelper<span class="brand-dot">.</span></span>
+    </a>
+    <p>Good people. Great work. A little more ease.</p>
+    <span class="footer-copy">© <span id="year"></span> MyHelper</span>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <dialog class="auth-dialog" id="authDialog">
+    <button class="dialog-close" id="closeDialog" aria-label="Close dialog">×</button>
+    <div class="dialog-brand"><span class="brand-icon">M</span></div>
+    <span class="section-kicker">WELCOME TO MYHELPER</span>
+    <h2 id="dialogTitle">Good to see you.</h2>
+    <p id="dialogSubtitle">Log in to continue to your account.</p>
+
+    <form id="authForm">
+      <div id="nameGroup" class="form-group" hidden>
+        <label for="authName">Full name</label>
+        <input id="authName" name="name" autocomplete="name" placeholder="Your full name" />
+      </div>
+      <div class="form-group">
+        <label for="authEmail">Email address</label>
+        <input id="authEmail" name="email" type="email" autocomplete="email" required placeholder="you@example.com" />
+      </div>
+      <div class="form-group" id="phoneGroup" hidden>
+        <label for="authPhone">Phone number</label>
+        <input id="authPhone" name="phone" type="tel" autocomplete="tel" placeholder="Your phone number" />
+      </div>
+      <div class="form-group">
+        <label for="authPassword">Password</label>
+        <input id="authPassword" name="password" type="password" minlength="8" autocomplete="current-password" required placeholder="At least 8 characters" />
+      </div>
+      <div class="form-group" id="roleGroup" hidden>
+        <label for="authRole">I want to</label>
+        <select id="authRole" name="role">
+          <option value="OWNER">Hire a worker</option>
+          <option value="WORKER">Offer my services</option>
+        </select>
+      </div>
+      <p class="form-error" id="authError" role="alert"></p>
+      <button class="btn btn-primary auth-submit" id="authSubmit" type="submit">Log in <span>→</span></button>
+    </form>
+    <p class="auth-switch"><span id="switchText">New to MyHelper?</span> <button id="switchAuth">Create account</button></p>
+  </dialog>
+
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

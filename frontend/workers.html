@@ -1,0 +1,98 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Find a Helper | MyHelper</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/workers.css">
+</head>
+<body>
+  <header class="navbar">
+    <a class="brand" href="index.html">
+      <span class="brand-icon">M</span>
+      <span>myhelper<span class="brand-dot">.</span></span>
+    </a>
+    <nav class="nav-links">
+      <a href="index.html#services">Services</a>
+      <a href="index.html#how-it-works">How it works</a>
+    </nav>
+    <div class="nav-actions">
+      <span id="accountLabel" class="account-label">Find your helper</span>
+      <button class="btn btn-primary" id="logoutBtn">Log out</button>
+    </div>
+  </header>
+
+  <main class="workers-page">
+    <section class="workers-hero">
+      <div class="workers-heading">
+        <span class="section-kicker">YOUR LOCAL HELP, ALL IN ONE PLACE</span>
+        <h1>Meet your next <span class="gradient-text">helper.</span></h1>
+        <p>Explore available local workers and find the right fit for your job.</p>
+      </div>
+
+      <form id="workerSearchForm" class="worker-filters">
+        <label>
+          <span>Service</span>
+          <input id="workType" placeholder="e.g. Electrician">
+        </label>
+        <label>
+          <span>City</span>
+          <input id="city" placeholder="Enter your city">
+        </label>
+        <label>
+          <span>Available on</span>
+          <input id="availableDate" type="date">
+        </label>
+        <label>
+          <span>Max charge (₹)</span>
+          <input id="maxCharge" type="number" min="0" placeholder="Any budget">
+        </label>
+        <button class="btn btn-primary filter-submit" type="submit">Search workers ↗</button>
+      </form>
+    </section>
+
+    <section class="results-section">
+      <div class="results-heading">
+        <div>
+          <span class="section-kicker">EXPLORE YOUR OPTIONS</span>
+          <h2>Available helpers</h2>
+        </div>
+        <span class="result-count" id="resultCount">Ready to search</span>
+      </div>
+
+      <div class="results-grid" id="workersGrid">
+        <div class="results-message">
+          <div class="results-message-icon">⌕</div>
+          <h3>Find the right person for the job</h3>
+          <p>Choose your service or city above, then search for available workers.</p>
+          <button class="btn btn-primary" id="initialSearchBtn">Explore workers</button>
+        </div>
+      </div>
+      <p class="page-error" id="workersError" role="alert"></p>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <dialog class="auth-dialog" id="requestDialog">
+    <button class="dialog-close" id="closeRequestDialog" aria-label="Close">×</button>
+    <span class="section-kicker">MAKE IT HAPPEN</span>
+    <h2>Send a work request</h2>
+    <p id="selectedWorkerText">Tell the worker a little about the job.</p>
+    <form id="requestForm">
+      <label class="request-label" for="requestMessage">Message (optional)</label>
+      <textarea id="requestMessage" maxlength="500" placeholder="Describe the work you need done..." rows="4"></textarea>
+      <p class="form-error" id="requestError" role="alert"></p>
+      <button class="btn btn-primary auth-submit" type="submit">Send request ↗</button>
+    </form>
+  </dialog>
+
+  <script src="js/api.js"></script>
+  <script src="js/workers.js"></script>
+</body>
+</html>

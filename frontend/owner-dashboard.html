@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Owner Dashboard | MyHelper</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+    <header class="dash-nav">
+        <a href="index.html" class="brand">My<span>Helper</span></a>
+        <div class="nav-right">
+            <span id="ownerName">Welcome back</span>
+            <button id="logoutBtn" class="logout-btn">Log out</button>
+        </div>
+    </header>
+
+    <main class="dashboard">
+        <section class="welcome">
+            <div>
+                <p class="eyebrow">OWNER DASHBOARD</p>
+                <h1>Find the right help.</h1>
+                <p>Discover available workers and manage your requests.</p>
+            </div>
+            <a href="workers.html" class="primary-link">Find workers ↗</a>
+        </section>
+
+        <section class="stats">
+            <article class="stat-card">
+                <span>Workers found</span>
+                <strong id="workerCount">—</strong>
+            </article>
+            <article class="stat-card">
+                <span>My requests</span>
+                <strong id="requestCount">—</strong>
+            </article>
+            <article class="stat-card">
+                <span>Pending requests</span>
+                <strong id="pendingCount">—</strong>
+            </article>
+        </section>
+
+        <section class="panel">
+            <div class="panel-heading">
+                <div>
+                    <p class="eyebrow">YOUR ACTIVITY</p>
+                    <h2>Work requests</h2>
+                </div>
+                <button id="refreshBtn" class="secondary-btn">Refresh</button>
+            </div>
+            <p id="statusMessage" class="status-message">Loading your requests...</p>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Request ID</th>
+                            <th>Worker</th>
+                            <th>Message</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="requestRows">
+                        <tr><td colspan="4">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="help-card">
+            <div>
+                <h2>Need someone for a job?</h2>
+                <p>Search available workers by service and location.</p>
+            </div>
+            <a href="workers.html" class="primary-link">Explore workers →</a>
+        </section>
+    </main>
+
+    <script src="js/api.js"></script>
+    <script src="js/owner-dashboard.js"></script>
+</body>
+</html>

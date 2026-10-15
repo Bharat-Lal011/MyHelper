@@ -1,0 +1,186 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Worker Dashboard | MyHelper</title>
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/worker-dashboard.css">
+</head>
+<body>
+  <header class="navbar">
+    <a class="brand" href="index.html">
+      <span class="brand-icon">M</span>
+      <span>myhelper<span class="brand-dot">.</span></span>
+    </a>
+
+    <div class="nav-actions">
+      <span id="workerName" class="account-label">Worker Dashboard</span>
+      <button class="btn btn-primary" id="logoutBtn">Log out</button>
+    </div>
+  </header>
+
+  <main class="dashboard-page">
+    <section class="dashboard-heading">
+      <span class="section-kicker">YOUR WORKSPACE</span>
+      <h1>Welcome, <span id="welcomeName">Helper</span>!</h1>
+      <p>Manage incoming work requests and keep track of your jobs.</p>
+    </section>
+
+    <section class="dashboard-stats">
+      <article class="stat-card">
+        <p>All Requests</p>
+        <h2 id="totalRequests">0</h2>
+      </article>
+
+      <article class="stat-card">
+        <p>Pending</p>
+        <h2 id="pendingRequests">0</h2>
+      </article>
+
+      <article class="stat-card">
+        <p>Accepted</p>
+        <h2 id="acceptedRequests">0</h2>
+      </article>
+
+      <article class="stat-card">
+        <p>Rejected</p>
+        <h2 id="rejectedRequests">0</h2>
+      </article>
+    </section>
+
+    
+<section class="dashboard-section">
+  <div class="dashboard-section-heading">
+    <div>
+      <span class="section-kicker">OFFER YOUR SERVICES</span>
+      
+<section class="dashboard-section">
+  <div class="dashboard-section-heading">
+    <div>
+      <span class="section-kicker">YOUR INFORMATION</span>
+      <h2>Worker Profile</h2>
+      <p>Update your service details so owners can find you.</p>
+    </div>
+  </div>
+
+  <form id="workerProfileForm" class="availability-form">
+    <label>
+      Service type
+      <input id="profileWorkType" type="text"
+             placeholder="e.g. Electrician" required>
+    </label>
+
+    <label>
+      Experience (years)
+      <input id="profileExperience" type="number"
+             min="0" required>
+    </label>
+
+    <label>
+      City
+      <input id="profileCity" type="text"
+             placeholder="e.g. Surat" required>
+    </label>
+
+    <label>
+      Area
+      <input id="profileArea" type="text"
+             placeholder="e.g. Adajan" required>
+    </label>
+
+    <label>
+      Description
+      <textarea id="profileDescription" rows="4"
+                placeholder="Describe your experience and services"></textarea>
+    </label>
+
+    <button class="btn btn-primary" type="submit">
+      Save Profile
+    </button>
+
+    <p id="profileMessage" role="status"></p>
+  </form>
+</section>
+
+      <h2>Add your availability</h2>
+    </div>
+  </div>
+
+  <form id="availabilityForm" class="availability-form">
+    <label>
+      Service type
+      <input id="availabilityWorkType" required
+             placeholder="e.g. Electrician">
+    </label>
+
+    <label>
+      City
+      <input id="availabilityCity" required
+             placeholder="e.g. Surat">
+    </label>
+
+    <label>
+      Area
+      <input id="availabilityArea" required
+             placeholder="e.g. Adajan">
+    </label>
+
+    <label>
+      Available date
+      <input id="availabilityDate" type="date" required>
+    </label>
+
+    <label>
+      Start time
+      <input id="availabilityStart" type="time" required>
+    </label>
+
+    <label>
+      End time
+      <input id="availabilityEnd" type="time" required>
+    </label>
+
+    <label>
+      Charge (₹)
+      <input id="availabilityCharge" type="number"
+             min="1" required placeholder="e.g. 500">
+    </label>
+
+    <button class="btn btn-primary" type="submit">
+      Publish availability
+    </button>
+
+    <p id="availabilityMessage" role="status"></p>
+  </form>
+</section>
+
+    <section class="dashboard-section">
+      <div class="dashboard-section-heading">
+        <div>
+          <span class="section-kicker">JOB MANAGEMENT</span>
+          <h2>Incoming work requests</h2>
+        </div>
+
+        <button class="btn btn-secondary" id="refreshRequests">
+          Refresh
+        </button>
+      </div>
+
+      <p id="requestsMessage" role="status">
+        Loading your requests...
+      </p>
+
+      <p id="requestsError" class="page-error" role="alert"></p>
+
+      <div id="requestsList" class="requests-list"></div>
+    </section>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/worker-dashboard.js"></script>
+</body>
+</html>
