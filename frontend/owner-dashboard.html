@@ -67,6 +67,52 @@
             </div>
         </section>
 
+        
+        <section class="panel" id="reviewPanel" hidden>
+            <div class="panel-heading">
+                <div>
+                    <p class="eyebrow">YOUR FEEDBACK</p>
+                    <h2>Rate your experience</h2>
+                </div>
+            </div>
+
+            <p id="reviewWorkerName"></p>
+
+            <form id="reviewForm">
+                <input type="hidden" id="reviewRequestId">
+
+                <label for="reviewRating">Rating</label>
+                <select id="reviewRating" required>
+                    <option value="">Select stars</option>
+                    <option value="5">★★★★★ — Excellent</option>
+                    <option value="4">★★★★ — Very good</option>
+                    <option value="3">★★★ — Good</option>
+                    <option value="2">★★ — Fair</option>
+                    <option value="1">★ — Poor</option>
+                </select>
+
+                <label for="reviewComment">Your review</label>
+                <textarea
+                    id="reviewComment"
+                    rows="4"
+                    maxlength="2000"
+                    placeholder="Share your experience with this worker..."
+                ></textarea>
+
+                <p id="reviewMessage" class="status-message"
+                   role="status" aria-live="polite"></p>
+
+                <button type="submit" class="primary-link">
+                    Submit review
+                </button>
+                <button type="button" id="cancelReview"
+                    class="secondary-btn">
+                    Cancel
+                </button>
+            </form>
+        </section>
+
+
         <section class="help-card">
             <div>
                 <h2>Need someone for a job?</h2>

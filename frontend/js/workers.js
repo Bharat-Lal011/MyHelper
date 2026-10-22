@@ -88,6 +88,19 @@ function renderWorkers(workers) {
         </div>
         <div class="worker-card-body">
           <p class="worker-description">${escapeHTML(worker.description || "Ready to discuss your work requirements.")}</p>
+          <div class="worker-rating">
+  <span class="rating-stars">★</span>
+  <span class="rating-value">${
+    Number(worker.total_reviews) > 0
+      ? Number(worker.average_rating).toFixed(1)
+      : "No ratings yet"
+  }</span>
+  ${
+    Number(worker.total_reviews) > 0
+      ? `<span class="rating-count">(${Number(worker.total_reviews)} reviews)</span>`
+      : ""
+  }
+</div>
           <div class="worker-meta">
             <div><span class="meta-label">LOCATION</span><span class="meta-value">${escapeHTML(location)}</span></div>
             <div><span class="meta-label">EXPERIENCE</span><span class="meta-value">${experience} ${experience === 1 ? "year" : "years"}</span></div>
@@ -118,7 +131,11 @@ async function searchWorkers() {
   };
 
   try {
-    const result = await MyHelperAPI.searchWorkers(filters, getToken());
+    const token = getToken();
+
+console.log("Token available:", Boolean(token));
+
+const result = await MyHelperAPI.searchWorkers(filters, token);
     renderWorkers(result.workers || []);
     count.textContent = `${result.count ?? (result.workers || []).length} helper(s) found`;
   } catch (error) {

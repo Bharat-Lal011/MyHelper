@@ -96,6 +96,7 @@ function renderRequests(requests) {
           <p><strong>Owner's message:</strong> ${escapeHTML(request.message || "No message provided.")}</p>
         </div>
 
+        
         ${pending ? `
           <div class="request-actions">
             <button class="btn btn-primary" data-action="accept"
@@ -107,7 +108,15 @@ function renderRequests(requests) {
               Reject
             </button>
           </div>
+        ` : request.status === "ACCEPTED" ? `
+          <div class="request-actions">
+            <button class="btn btn-primary" data-action="complete"
+              data-id="${Number(request.request_id ?? request.work_request_id ?? request.id)}">
+              Complete Work
+            </button>
+          </div>
         ` : ""}
+
       </article>
     `;
   }).join("");
@@ -130,23 +139,31 @@ async function loadRequests() {
   }
 }
 
+
 async function updateRequest(requestId, action) {
   const buttons = [...document.querySelectorAll(`[data-id="${requestId}"]`)];
   buttons.forEach(button => button.disabled = true);
   showError("");
 
   try {
-    // This endpoint must match the route implemented in your Flask backend.
-    const status = action === "accept" ? "ACCEPTED" : "REJECTED";
+    const statusMap = {
+      accept: "ACCEPTED",
+      reject: "REJECTED",
+      complete: "COMPLETED"
+    };
+
+    const status = statusMap[action];
 
     const result = await MyHelperAPI.respondToRequest(
-    requestId,
-    status,
-    token()
+      requestId,
+      status,
+      token()
     );
 
     $("#requestsMessage").textContent =
-      result.message || `Request ${action}ed successfully.`;
+  action === "complete"
+    ? "Work completed successfully!"
+    : result.message || `Request ${action}ed successfully.`;
 
     await loadRequests();
   } catch (error) {
@@ -161,12 +178,14 @@ $("#requestsList").addEventListener("click", event => {
   if (!button) return;
 
   const action = button.dataset.action;
-  if (!["accept", "reject"].includes(action)) return;
+
+  if (!["accept", "reject", "complete"].includes(action)) return;
 
   updateRequest(Number(button.dataset.id), action);
 });
 
 $("#refreshRequests").addEventListener("click", loadRequests);
+
 
 $("#logoutBtn").addEventListener("click", () => {
   sessionStorage.removeItem("myhelper_token");

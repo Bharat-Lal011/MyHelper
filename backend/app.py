@@ -1,15 +1,15 @@
-
+import json
 import os
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timezone, timedelta
 
 import jwt
+import requests
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from db import get_db_connection
-
 load_dotenv()
 app = Flask(__name__)
 
@@ -501,6 +501,7 @@ def search_workers():
         conditions.append("a.charge <= %s")
         params.append(charge_limit)
 
+    
     query = f"""
         SELECT
             wp.worker_id,
@@ -514,13 +515,24 @@ def search_workers():
             a.available_date,
             a.start_time,
             a.end_time,
-            a.charge
+            a.charge,
+            COALESCE((
+                SELECT ROUND(AVG(r.rating), 1)
+                FROM reviews r
+                WHERE r.worker_id = wp.worker_id
+            ), 0) AS average_rating,
+            (
+                SELECT COUNT(*)
+                FROM reviews r
+                WHERE r.worker_id = wp.worker_id
+            ) AS total_reviews
         FROM worker_profiles wp
         JOIN users u ON u.user_id = wp.user_id
         JOIN availability a ON a.worker_id = wp.worker_id
         WHERE {" AND ".join(conditions)}
         ORDER BY a.available_date, a.start_time
     """
+
 
     connection = None
     cursor = None
@@ -755,6 +767,188 @@ def get_work_requests():
         if connection and connection.is_connected():
             connection.close()
 
+@app.route("/api/reviews", methods=["POST"])
+def create_review():
+    auth = request.headers.get("Authorization", "").split()
+
+    if len(auth) != 2 or auth[0].lower() != "bearer":
+        return jsonify({"error": "Token required"}), 401
+
+    try:
+        payload = jwt.decode(
+            auth[1],
+            os.getenv("JWT_SECRET_KEY"),
+            algorithms=["HS256"]
+        )
+    except jwt.PyJWTError:
+        return jsonify({"error": "Invalid or expired token"}), 401
+
+    if payload.get("role") != "OWNER":
+        return jsonify({"error": "Only owners can submit reviews"}), 403
+
+    data = request.get_json(silent=True) or {}
+
+    try:
+        request_id = int(data.get("request_id"))
+        rating = int(data.get("rating"))
+
+        if request_id <= 0:
+            raise ValueError()
+
+        if rating < 1 or rating > 5:
+            return jsonify({
+                "error": "Rating must be between 1 and 5"
+            }), 400
+
+    except (ValueError, TypeError):
+        return jsonify({
+            "error": "Valid request_id and rating are required"
+        }), 400
+
+    comment = data.get("comment", "")
+
+    if not isinstance(comment, str):
+        return jsonify({"error": "Comment must be text"}), 400
+
+    comment = comment.strip()
+
+    if len(comment) > 2000:
+        return jsonify({
+            "error": "Comment cannot exceed 2000 characters"
+        }), 400
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+        connection.start_transaction()
+        cursor = connection.cursor(dictionary=True)
+
+        # Verify that this completed booking belongs to the owner.
+        cursor.execute(
+            """
+            SELECT wr.worker_id, wr.status
+            FROM work_requests wr
+            JOIN owner_profiles op ON wr.owner_id = op.owner_id
+            WHERE wr.request_id = %s
+              AND op.user_id = %s
+            FOR UPDATE
+            """,
+            (request_id, payload["user_id"])
+        )
+
+        booking = cursor.fetchone()
+
+        if not booking:
+            connection.rollback()
+            return jsonify({
+                "error": "Booking not found for this owner"
+            }), 404
+
+        if booking["status"] != "COMPLETED":
+            connection.rollback()
+            return jsonify({
+                "error": "Only completed bookings can be reviewed"
+            }), 409
+
+        cursor.execute(
+            """
+            INSERT INTO reviews
+                (request_id, owner_id, worker_id, rating, comment)
+            SELECT
+                wr.request_id, wr.owner_id, wr.worker_id, %s, %s
+            FROM work_requests wr
+            WHERE wr.request_id = %s
+            """,
+            (rating, comment or None, request_id)
+        )
+
+        review_id = cursor.lastrowid
+        connection.commit()
+
+        return jsonify({
+            "message": "Review submitted successfully",
+            "review_id": review_id,
+            "request_id": request_id,
+            "rating": rating
+        }), 201
+
+    except Exception as error:
+        if connection:
+            connection.rollback()
+
+        # MySQL duplicate-key error: one review per booking.
+        if getattr(error, "errno", None) == 1062:
+            return jsonify({
+                "error": "This booking has already been reviewed"
+            }), 409
+
+        app.logger.exception("Creating review failed")
+        return jsonify({"error": "Could not submit review"}), 500
+
+    finally:
+        if cursor:
+            cursor.close()
+        if connection and connection.is_connected():
+            connection.close()
+
+
+@app.route("/api/reviews/mine", methods=["GET"])
+def get_my_reviews():
+    auth = request.headers.get("Authorization", "").split()
+
+    if len(auth) != 2 or auth[0].lower() != "bearer":
+        return jsonify({"error": "Token required"}), 401
+
+    try:
+        payload = jwt.decode(
+            auth[1],
+            os.getenv("JWT_SECRET_KEY"),
+            algorithms=["HS256"]
+        )
+    except jwt.PyJWTError:
+        return jsonify({"error": "Invalid or expired token"}), 401
+
+    if payload.get("role") != "OWNER":
+        return jsonify({"error": "Owners only"}), 403
+
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor(dictionary=True)
+
+        cursor.execute(
+            """
+            SELECT r.request_id, r.rating, r.created_at
+            FROM reviews r
+            JOIN owner_profiles op ON r.owner_id = op.owner_id
+            WHERE op.user_id = %s
+            ORDER BY r.created_at DESC
+            """,
+            (payload["user_id"],)
+        )
+
+        reviews = cursor.fetchall()
+
+        for review in reviews:
+            review["created_at"] = str(review["created_at"])
+
+        return jsonify({"reviews": reviews}), 200
+
+    except Exception:
+        app.logger.exception("Fetching owner reviews failed")
+        return jsonify({"error": "Could not fetch reviews"}), 500
+
+    finally:
+        if cursor:
+            cursor.close()
+        if connection and connection.is_connected():
+            connection.close()
+
+
 @app.route("/api/work-requests/<int:request_id>", methods=["PATCH"])
 def respond_to_request(request_id):
     auth = request.headers.get("Authorization", "").split()
@@ -777,9 +971,9 @@ def respond_to_request(request_id):
     data = request.get_json(silent=True) or {}
     status = data.get("status", "").upper()
 
-    if status not in ("ACCEPTED", "REJECTED"):
+    if status not in ("ACCEPTED", "REJECTED", "COMPLETED"):
         return jsonify({
-            "error": "Status must be ACCEPTED or REJECTED"
+            "error": "Status must be ACCEPTED, REJECTED, or COMPLETED"
         }), 400
 
     connection = None
@@ -809,10 +1003,18 @@ def respond_to_request(request_id):
             connection.rollback()
             return jsonify({"error": "Request not found"}), 404
 
-        if work_request["status"] != "PENDING":
+        current_status = work_request["status"]
+
+        if status == "COMPLETED":
+            if current_status != "ACCEPTED":
+                connection.rollback()
+                return jsonify({
+                    "error": "Only accepted requests can be completed"
+                }), 409
+        elif current_status != "PENDING":
             connection.rollback()
             return jsonify({
-                "error": "This request has already been processed"
+                    "error": "This request has already been processed"
             }), 409
 
         if status == "ACCEPTED":
@@ -873,3 +1075,109 @@ def respond_to_request(request_id):
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+
+@app.route("/api/ai/parse-job", methods=["POST"])
+def parse_job_with_ai():
+    auth = request.headers.get("Authorization", "").split()
+
+    if len(auth) != 2 or auth[0].lower() != "bearer":
+        return jsonify({"error": "Token required"}), 401
+
+    try:
+        payload = jwt.decode(
+            auth[1],
+            os.getenv("JWT_SECRET_KEY"),
+            algorithms=["HS256"]
+        )
+    except jwt.PyJWTError:
+        return jsonify({"error": "Invalid or expired token"}), 401
+
+    if payload.get("role") != "OWNER":
+        return jsonify({"error": "Only owners can use AI worker matching"}), 403
+
+    data = request.get_json(silent=True) or {}
+    job_description = data.get("description", "")
+
+    if not isinstance(job_description, str) or not job_description.strip():
+        return jsonify({"error": "Please describe the work you need"}), 400
+
+    if len(job_description) > 1000:
+        return jsonify({"error": "Description must be 1000 characters or fewer"}), 400
+
+    prompt = f"""
+You extract search filters for a local worker service app.
+
+Today's date is {date.today().isoformat()}.
+
+Read the user's request and return ONLY a valid JSON object with these keys:
+- work_type: service type as a short string, or empty string
+- city: city name, or empty string
+- date: date in YYYY-MM-DD format, or empty string
+- max_charge: maximum budget as a number, or null
+
+Rules:
+- Use only information stated or clearly implied by the user.
+- Convert relative dates such as tomorrow into YYYY-MM-DD.
+- Do not guess missing cities, dates, or budgets.
+- Do not include markdown or explanations.
+
+User request: {job_description}
+"""
+
+    try:
+        response = requests.post(
+            "http://localhost:11434/api/generate",
+            json={
+                "model": "qwen2.5:3b",
+                "prompt": prompt,
+                "stream": False,
+                "format": "json"
+            },
+            timeout=90
+        )
+        response.raise_for_status()
+        result = response.json()
+        filters = json.loads(result["response"])
+
+        work_type = filters.get("work_type", "")
+        city = filters.get("city", "")
+        date_filter = filters.get("date", "")
+        max_charge = filters.get("max_charge")
+
+        if not isinstance(work_type, str) or not isinstance(city, str):
+            raise ValueError("Invalid text filters")
+
+        if not isinstance(date_filter, str):
+            raise ValueError("Invalid date filter")
+
+        if date_filter:
+            datetime.strptime(date_filter, "%Y-%m-%d")
+
+        if max_charge is not None:
+            if isinstance(max_charge, bool):
+                raise ValueError("Invalid budget")
+            max_charge = float(max_charge)
+            if not 0 <= max_charge < float("inf"):
+                raise ValueError("Invalid budget")
+
+        return jsonify({
+            "filters": {
+                "work_type": work_type.strip()[:100],
+                "city": city.strip()[:100],
+                "date": date_filter,
+                "max_charge": max_charge
+            }
+        }), 200
+
+    except requests.RequestException:
+        app.logger.exception("Ollama request failed")
+        return jsonify({
+            "error": "Could not reach Ollama. Make sure Ollama is running."
+        }), 503
+    except (ValueError, KeyError, TypeError, json.JSONDecodeError):
+        app.logger.exception("Could not parse AI job filters")
+        return jsonify({
+            "error": "AI could not understand that request. Please try simpler wording."
+        }), 502
+
